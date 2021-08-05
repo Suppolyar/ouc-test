@@ -1,37 +1,68 @@
 <template>
   <div>
-    <vue-modaltor :visible="open" @hide="open=false" v-if="open">
+    <vue-modaltor :visible="open" :resize-width='{1200:"60%",992:"80%",768:"90%"}'>
       <template #header>
         <div class="title">
           Оставьте ваши контакты <br>
-          и мы свяжемся с вами!
+          для обратной связи
         </div>
       </template>
-      <template #body >
-        <form action="#">
+      <template #body>
+        <div class="title" v-if="isCompleted">Спасибо, в скором времени мы с вами свяжемся:)</div>
+        <form v-else @submit.prevent="submitForm" action="#">
           <h2></h2>
-          <input type="email" value="" placeholder="Ваш Email" required >
-          <button @click="showInfo">Отправить</button>
-          <button class="btn-closed" @click="open=false">Закрыть</button>
+          <input type="email" v-model="email" placeholder="Ваш Email" required >
+          <button v-show="!isLoading">Отправить</button>
+          <loader :show="isLoading"></loader>
         </form>
+        <button class="btn-closed" @click="closeModal">Закрыть</button>
       </template>
     </vue-modaltor>
-    <button @click="open=true">К покупкам</button>
+    <button @click="openModal">К покупкам</button>
   </div>
 </template>
 <script>
+import Loader from "@/components/UI/Loader";
 export default {
+  components: {
+    Loader
+  },
   name: "Modal",
   data() {
     return {
-      open: false
+      open: false,
+      email: '',
+      isLoading: false,
+      isCompleted: false,
     }
   },
   methods: {
-    showInfo() {
-      let info = document.querySelector("input")
+    submitForm() {
+      this.isLoading = true
+      new Promise((resolve, reject) => {
+        if(this.email.length > 0) {
+          setTimeout( () => {
+            console.log(this.email)
+            resolve();
+          }, 1000)
+        } else {
+          reject();
+        }
+      }).then(() => {
+        this.isLoading = false
+        this.isCompleted = true
+      }).catch(() => {
+        this.isLoading = false
 
-      console.log(info.value)
+      })
+    },
+    openModal() {
+      this.open = true
+    },
+    closeModal() {
+      this.open = false
+      this.isCompleted = false
+      this.email = ''
     }
   }
 }
@@ -56,6 +87,7 @@ input {
 }
 .title {
   padding-top: 20px;
+  margin-bottom: 10px;
   font-family: RotondaC;
   font-style: normal;
   font-weight: bold;
@@ -66,7 +98,7 @@ input {
 }
 button {
   display: block;
-  margin: 40px auto;
+  margin: 40px auto ;
   width: 340px;
   height: 70px;
   background: linear-gradient(0deg, #7DB945, #7DB945), #7DB945;
@@ -96,6 +128,6 @@ button:hover {
   width: 240px;
   height: 50px;
   font-size: 16px;
-
+  margin-bottom: 30px;
 }
 </style>

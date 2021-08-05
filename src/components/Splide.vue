@@ -7,7 +7,7 @@
    <splide class="splide">
      <splide-slide
          v-for="card in cards"
-         :key="card"
+         :key="card.id"
      >
        <Card :card="card"></Card>
      </splide-slide>
